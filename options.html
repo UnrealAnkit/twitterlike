@@ -1,0 +1,272 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings — X Likes Harvester</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050508;
+    --surface: #0d0d14;
+    --border: #1a1a2e;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --danger: #ff4466;
+    --success: #00ff88;
+    --text: #e2e8f0;
+    --muted: #4a5568;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  .header {
+    margin-bottom: 32px;
+  }
+
+  .back-link {
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .field { margin-bottom: 14px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  input, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,255,0.1);
+  }
+
+  textarea { min-height: 80px; }
+
+  .hint {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+  }
+
+  .hint code {
+    color: var(--accent2);
+    background: rgba(124,58,237,0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #0099cc 100%);
+    color: #000;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  .status-msg {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .status-msg.show { display: block; }
+  .status-msg.success { color: var(--success); background: rgba(0,255,136,0.08); border: 1px solid rgba(0,255,136,0.2); }
+  .status-msg.error { color: var(--danger); background: rgba(255,68,102,0.08); border: 1px solid rgba(255,68,102,0.2); }
+
+  .info-box {
+    background: rgba(0,212,255,0.05);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.6;
+  }
+
+  .info-box strong { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <button class="back-link" id="closeSettings">← Back</button>
+    <h1>Settings <span>⚙</span></h1>
+    <div class="subtitle">X Likes Harvester</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Authentication</div>
+
+    <div class="field">
+      <div class="form-group">
+        <label for="btnAuth">X Account Connection</label>
+        <div style="margin-top: 8px;">
+          <button id="btnAuth" class="btn btn-primary" style="width:100%; background: #1da1f2; color: #fff;">Connect to X (Twitter)</button>
+          <p id="authStatus" class="hint" style="margin-top: 8px;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">DM Template</div>
+
+    <div class="field">
+      <label>Message Template</label>
+      <textarea id="dmTemplate" placeholder="Hey @{username}! Thanks for liking the post..."></textarea>
+      <div class="hint">
+        Variables: <code>{username}</code> = @handle, <code>{name}</code> = display name<br>
+        DMs are sent with a 5s delay between each to avoid rate limits.
+      </div>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-ghost" id="btnReset">Reset</button>
+    <button class="btn btn-primary" id="btnSave">Save Settings</button>
+  </div>
+
+  <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<script src="options.js"></script>
+<script>
+  document.getElementById('closeSettings').addEventListener('click', () => {
+    window.close();
+  });
+</script>
+</body>
+</html>

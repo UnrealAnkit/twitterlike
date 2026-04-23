@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>X Likes Harvester</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Syne:wght@400;600;700;800&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050508;
+    --surface: #0d0d14;
+    --border: #1a1a2e;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --danger: #ff4466;
+    --success: #00ff88;
+    --text: #e2e8f0;
+    --muted: #4a5568;
+    --glow: 0 0 20px rgba(0, 212, 255, 0.15);
+  }
+
+  body {
+    width: 340px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    overflow: hidden;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #050508 0%, #0d0d1f 100%);
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 28px; height: 28px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  .logo-text {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: var(--text);
+  }
+
+  .settings-link {
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    transition: color 0.2s;
+    text-decoration: none;
+    background: none;
+    border: none;
+  }
+
+  .settings-link:hover { color: var(--accent); }
+
+  .counter-row {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  .counter-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .counter-label {
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+
+  .status-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    min-height: 36px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s;
+  }
+
+  .status-bar.success { border-color: rgba(0,255,136,0.3); color: var(--success); }
+  .status-bar.error { border-color: rgba(255,68,102,0.3); color: var(--danger); }
+  .status-bar.loading { border-color: rgba(0,212,255,0.3); color: var(--accent); }
+
+  .dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .dot.success { background: var(--success); box-shadow: 0 0 6px var(--success); }
+  .dot.error { background: var(--danger); box-shadow: 0 0 6px var(--danger); }
+  .dot.loading {
+    background: var(--accent);
+    animation: pulse 1s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .divider {
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 0;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .btn-group { display: flex; flex-direction: column; gap: 6px; }
+  .btn-row { display: flex; gap: 6px; }
+
+  .btn {
+    flex: 1;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    text-transform: uppercase;
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #0099cc 100%);
+    color: #000;
+  }
+
+  .btn-primary:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+  }
+
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .btn-secondary:not(:disabled):hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  .btn-purple {
+    background: linear-gradient(135deg, var(--accent2) 0%, #5b21b6 100%);
+    color: #fff;
+  }
+
+  .btn-purple:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 20px rgba(124,58,237,0.35);
+  }
+
+  .btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(255,68,102,0.3);
+    font-size: 10px;
+    padding: 7px 10px;
+  }
+
+  .btn-danger:not(:disabled):hover {
+    background: rgba(255,68,102,0.1);
+    border-color: var(--danger);
+  }
+
+  .method-tabs {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+  }
+
+  .tab {
+    flex: 1;
+    padding: 6px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .tab.active {
+    background: linear-gradient(135deg, rgba(0,212,255,0.15), rgba(124,58,237,0.15));
+    color: var(--accent);
+    border: 1px solid rgba(0,212,255,0.2);
+  }
+
+  .footer {
+    padding: 8px 14px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid var(--border);
+  }
+
+  .tweet-id-display {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+  }
+
+  .progress-bar {
+    height: 2px;
+    background: var(--border);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-top: 4px;
+    display: none;
+  }
+
+  .progress-bar.active { display: block; }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    width: 0%;
+    transition: width 0.3s;
+    animation: indeterminate 1.5s infinite;
+  }
+
+  @keyframes indeterminate {
+    0% { transform: translateX(-100%); width: 40%; }
+    100% { transform: translateX(350px); width: 40%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon">⚡</div>
+      <span class="logo-text">LIKES HARVESTER</span>
+    </div>
+    <button class="settings-link" id="openSettings" title="Settings">⚙</button>
+  </div>
+  <div class="counter-row">
+    <span class="counter-num" id="count">0</span>
+    <span class="counter-label">users collected</span>
+  </div>
+  <div class="progress-bar" id="progressBar">
+    <div class="progress-fill"></div>
+  </div>
+</div>
+
+<div class="body">
+  <div class="status-bar" id="status">
+    <span class="dot" id="statusDot"></span>
+    <span id="statusText">Ready — navigate to a tweet's /likes page</span>
+  </div>
+
+  <div class="divider">Fetch Method</div>
+
+  <div class="method-tabs">
+    <button class="tab active" data-method="api" id="tabApi">API v2</button>
+    <button class="tab" data-method="dom" id="tabDom">DOM Scrape</button>
+  </div>
+
+  <div class="btn-group">
+    <button class="btn btn-primary" id="btnFetch">⚡ Fetch Likes</button>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="btnExport">↓ Export CSV</button>
+      <button class="btn btn-danger" id="btnClear">✕ Clear</button>
+    </div>
+
+    <button class="btn btn-purple" id="btnDM">✉ Send DMs to All</button>
+  </div>
+</div>
+
+<div class="footer">
+  <span class="tweet-id-display" id="tweetIdDisplay">tweet: —</span>
+  <span class="tweet-id-display" style="color: #2d2d4e;">v1.0.0</span>
+</div>
+
+<script src="popup.js"></script>
+</body>
+</html>

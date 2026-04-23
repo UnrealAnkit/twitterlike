@@ -42,3 +42,7 @@ document.getElementById('btnReset').addEventListener('click', () => {
     showStatus('Settings cleared', 'success');
   });
 });
+
+document.getElementById('closeSettings')?.addEventListener('click', () => {
+  window.close();
+});

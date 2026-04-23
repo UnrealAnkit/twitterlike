@@ -3,6 +3,7 @@ const RATE_LIMIT_DELAY = 3000;
 const DM_DELAY = 5000;
 
 const CLIENT_ID = 'c0Y3UGY0cy1TcE10T19wd2QtNHc6MTpjaQ';
+const CLIENT_SECRET = 'cyhVrKKL4gVWp-sS5PLy8iLultuxQwkmvfaIWzzEYZoEm7VTcz';
 const REDIRECT_URI = 'https://pplgilpaidhcnmeflcoejbamoliejjgi.chromiumapp.org/';
 const SCOPES = 'tweet.read users.read like.read dm.write offline.access';
 
@@ -36,9 +37,14 @@ async function authorize() {
         return reject('State mismatch');
       }
 
+      const basicAuth = btoa(CLIENT_ID + ':' + CLIENT_SECRET);
+      
       const tokenRes = await fetch('https://api.twitter.com/2/oauth2/token', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: { 
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Authorization': `Basic ${basicAuth}`
+        },
         body: new URLSearchParams({
           code: code,
           grant_type: 'authorization_code',

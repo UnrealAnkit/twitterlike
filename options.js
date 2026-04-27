@@ -17,8 +17,11 @@ chrome.storage.local.get(['accessToken', 'dmTemplate'], ({ accessToken, dmTempla
 btnAuth.addEventListener('click', () => {
   authStatus.textContent = 'Connecting...';
   chrome.runtime.sendMessage({ action: 'login' }, res => {
-    if (res?.error) {
-      authStatus.textContent = 'Error: ' + res.error;
+    if (chrome.runtime.lastError) {
+      authStatus.textContent = 'Error: ' + chrome.runtime.lastError.message;
+      showStatus('Login failed', 'error');
+    } else if (!res || res.error) {
+      authStatus.textContent = 'Error: ' + (res?.error || 'Unknown error');
       showStatus('Login failed', 'error');
     } else {
       authStatus.textContent = '✓ Connected to Twitter';

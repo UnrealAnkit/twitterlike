@@ -4,10 +4,10 @@ const DM_DELAY = 5000;
 
 const CLIENT_ID = 'c0Y3UGY0cy1TcE10T19wd2QtNHc6MTpjaQ';
 const CLIENT_SECRET = 'cyhVrKKL4gVWp-sS5PLy8iLultuxQwkmvfaIWzzEYZoEm7VTcz';
-const REDIRECT_URI = 'https://pplgilpaidhcnmeflcoejbamoliejjgi.chromiumapp.org/';
 const SCOPES = 'tweet.read users.read like.read dm.write offline.access';
 
 async function authorize() {
+  const REDIRECT_URI = chrome.identity.getRedirectURL();
   const state = Math.random().toString(36).substring(2, 15);
   const codeVerifier = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
   

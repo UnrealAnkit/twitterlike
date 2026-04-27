@@ -148,7 +148,11 @@ btnClear.addEventListener('click', () => {
 });
 
 document.getElementById('openSettings').addEventListener('click', () => {
-  chrome.runtime.openOptionsPage();
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
 });
 
 init();
